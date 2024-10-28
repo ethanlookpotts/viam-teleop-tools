@@ -21,6 +21,14 @@ type Globetrotter struct {
 	cfg *GlobetrotterConfig
 }
 
+type GlobetrotterConfig struct {
+	ExtraReadingsData map[string]any `json:"extra_readings_data"`
+}
+
+func (c *GlobetrotterConfig) Validate(path string) ([]string, error) {
+	return nil, nil
+}
+
 var (
 	path = []*geo.Point{
 		// nyc
@@ -92,14 +100,6 @@ func position(time time.Time) *Position {
 	}
 }
 
-type GlobetrotterConfig struct {
-	ExtraReadingsData map[string]any `json:"extra_readings_data"`
-}
-
-func (c *GlobetrotterConfig) Validate(path string) ([]string, error) {
-	return nil, nil
-}
-
 func newGlobetrotter(ctx context.Context, deps resource.Dependencies, conf resource.Config, logger logging.Logger) (movementsensor.MovementSensor, error) {
 	cfg, err := resource.NativeConfig[*GlobetrotterConfig](conf)
 	if err != nil {
@@ -161,6 +161,7 @@ func (e *Globetrotter) Accuracy(ctx context.Context, extra map[string]any) (*mov
 
 func (e *Globetrotter) Readings(ctx context.Context, extra map[string]any) (map[string]any, error) {
 	return map[string]any{
-		"pos": "ocean",
+		"pos":   "ocean",
+		"extra": e.cfg.ExtraReadingsData,
 	}, nil
 }
