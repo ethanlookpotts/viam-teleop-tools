@@ -95,7 +95,7 @@ func position(time time.Time) *Position {
 
 	return &Position{
 		Point:    pointWithNoise,
-		Altitude: 1,
+		Altitude: 0.5,
 		Compass:  compass,
 	}
 }
