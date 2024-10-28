@@ -8,7 +8,7 @@ if [[ "${TRACE-0}" == "1" ]]; then
 fi
 
 if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
-    echo 'Usage: ./run-with-auto-update.sh 
+    echo 'Usage: ./run-with-auto-update.sh
 
     Special script to get auto-updating behavior for local modules from pushes to main.
 
@@ -21,6 +21,5 @@ fi
 script_dir="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 
 pushd "$script_dir/.."
-git pull
-just build
-timeout 300 ./dist/module "$1"
+su "$MACH_USER" /bin/sh -c ". ~/.profile && git pull --ff && just build"
+timeout 300 ./dist/module "$@"
