@@ -6,6 +6,7 @@ import (
 	"math"
 	"time"
 
+	"go.viam.com/rdk/components/sensor"
 	"go.viam.com/rdk/logging"
 	"go.viam.com/rdk/resource"
 )
@@ -24,7 +25,7 @@ type EverythingConfig struct {
 func (c *EverythingConfig) Validate(path string) ([]string, error) {
 	return nil, nil
 }
-func newEverything(ctx context.Context, deps resource.Dependencies, conf resource.Config, logger logging.Logger) (resource.Resource, error) {
+func newEverything(ctx context.Context, deps resource.Dependencies, conf resource.Config, logger logging.Logger) (sensor.Sensor, error) {
 	cfg, err := resource.NativeConfig[*EverythingConfig](conf)
 	if err != nil {
 		return nil, err
@@ -32,8 +33,8 @@ func newEverything(ctx context.Context, deps resource.Dependencies, conf resourc
 	return &Everything{Named: conf.ResourceName().AsNamed(), cfg: cfg}, nil
 }
 
-func (e *Everything) DoCommand(ctx context.Context, cmd map[string]interface{}) (map[string]interface{}, error) {
-	return map[string]interface{}{"raw_input": cmd, "time_unix": time.Now().Unix()}, nil
+func (e *Everything) DoCommand(ctx context.Context, cmd map[string]any) (map[string]any, error) {
+	return map[string]any{"raw_input": cmd, "time_unix": time.Now().Unix()}, nil
 }
 
 // Feel free to change this. I just played around in desmos until something looked interesting.
@@ -70,8 +71,8 @@ func TimeDependentType() any {
 	return noise
 }
 
-func (e *Everything) Readings(ctx context.Context, extra map[string]interface{}) (map[string]interface{}, error) {
-	return map[string]interface{}{
+func (e *Everything) Readings(ctx context.Context, extra map[string]any) (map[string]any, error) {
+	return map[string]any{
 		"null":                     nil,
 		"extra_readings_data":      e.cfg.ExtraReadingsData,
 		"noise":                    TimeDependentNoise(),
