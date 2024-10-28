@@ -21,5 +21,5 @@ fi
 script_dir="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 
 pushd "$script_dir/.."
-su "$MACH_USER" /bin/sh -c ". ~/.profile && git pull --ff && just build"
+su "$MACH_USER" /bin/sh -c ". ~/.profile && git pull --ff && just setup build"
 timeout 300 ./dist/module "$@"
