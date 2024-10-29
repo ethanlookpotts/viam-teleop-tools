@@ -23,7 +23,6 @@ func main() {
 	})
 
 	module.ModularMain(
-		"everything",
 		resource.APIModel{
 			API:   sensor.API,
 			Model: EverythingModel,
