@@ -7,7 +7,11 @@ toolchain go1.23.2
 require (
 	github.com/golang/geo v0.0.0-20210211234256-740aa86cb551
 	github.com/kellydunn/golang-geo v0.7.0
-	go.viam.com/rdk v0.47.2
+	github.com/pkg/errors v0.9.1
+	go.mongodb.org/mongo-driver v1.11.6
+	go.viam.com/api v0.1.350
+	go.viam.com/rdk v0.48.2
+	go.viam.com/utils v0.1.110
 )
 
 require (
@@ -93,7 +97,6 @@ require (
 	github.com/pion/stun v0.6.1 // indirect
 	github.com/pion/transport/v2 v2.2.10 // indirect
 	github.com/pion/turn/v2 v2.1.6 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rs/cors v1.11.1 // indirect
@@ -110,7 +113,6 @@ require (
 	github.com/zitadel/oidc v1.13.4 // indirect
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	go-hep.org/x/hep v0.32.1 // indirect
-	go.mongodb.org/mongo-driver v1.11.6 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.54.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0 // indirect
@@ -120,9 +122,7 @@ require (
 	go.uber.org/goleak v1.3.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	go.viam.com/api v0.1.348 // indirect
 	go.viam.com/test v1.1.1-0.20220913152726-5da9916c08a2 // indirect
-	go.viam.com/utils v0.1.108 // indirect
 	golang.org/x/crypto v0.28.0 // indirect
 	golang.org/x/exp v0.0.0-20240904232852-e7e105dedf7e // indirect
 	golang.org/x/image v0.19.0 // indirect

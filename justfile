@@ -1,3 +1,6 @@
+default:
+    @just -l
+
 build:
     rm -rf dist | true # macOS has surprising behavior with executables that change in-place
     mkdir -p dist
@@ -11,3 +14,7 @@ fmt:
 
 format:
     gofmt -w .
+
+set positional-arguments
+sync config-filepath:
+    go run ./sync-data "$1"
