@@ -98,7 +98,7 @@ func main() {
 
 	logger.Infof("found %d documents", len(tabularDataByMQLResponse.RawData))
 
-	unmarshalledData := []any{}
+	unmarshalledData := []map[string]any{}
 	for _, data := range tabularDataByMQLResponse.RawData {
 		tabularDataMap, err := unmarshallRawData[map[string]any](data)
 		if err != nil {
@@ -117,7 +117,7 @@ func main() {
 		}
 		logger.Info(string(tabularDataJson))
 	}
-	err = reuploadData(ctx, config.Destination, unmarshalledData)
+	err = reuploadData(ctx, logger, config.Destination, unmarshalledData)
 	if err != nil {
 		logger.Fatalw("error reuploading data", "error", err)
 	}
@@ -147,17 +147,53 @@ func dialApp(ctx context.Context, source DataSource) (rpc.ClientConn, error) {
 	return conn, err
 }
 
-func reuploadData(ctx context.Context, destination DataDestination, data []any) error {
+func reuploadData(ctx context.Context, logger logging.Logger, destination DataDestination, data []map[string]any) error {
 	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(destination.MongoDBURL))
 	if err != nil {
 		return errors.Wrap(err, "failed to connect to local mongo")
 	}
 	defer mongoClient.Disconnect(ctx)
 	coll := mongoClient.Database(QueryableTabularDatabaseName).Collection(QueryableTabularCollectionName)
-	_, err = coll.InsertMany(ctx, data)
+	// My brutal index to speed up re-checking
+	// With this index, this func takes ~10 seconds locally. Without this, this func can take >10 minutes
+	indexName := "viam-teleop-tools-time-received-index"
+
+	logger.Infof("Creating %s.", indexName)
+	_, err = coll.Indexes().CreateOne(ctx, mongo.IndexModel{
+		Keys: bson.D{{Key: "time_received", Value: 1}},
+		Options: &options.IndexOptions{
+			Name: &indexName,
+		},
+	})
 	if err != nil {
-		return errors.Wrap(err, "failed to insert data")
+		return errors.Wrap(err, "failed to create index")
 	}
+	logger.Infof("index created")
+
+	numInserted := 0
+
+	// pretty inefficient but totally fine for localdb.
+	for i, datum := range data {
+		res := coll.FindOne(ctx, bson.M{"time_received": datum["time_received"]})
+		err := res.Err()
+		isNoDocs := errors.Is(err, mongo.ErrNoDocuments)
+		if err != nil && !isNoDocs {
+			return errors.Wrap(err, "failed to find matching record")
+		}
+		// insert
+		if isNoDocs {
+			_, err = coll.InsertOne(ctx, datum)
+			if err != nil {
+				return errors.Wrap(err, "failed to insert data")
+			}
+			numInserted += 1
+		}
+		if i%100 == 0 || i == len(data)-1 {
+			logger.Infof("Upload: %d/%d. Newly inserted points: %d", i+1, len(data), numInserted)
+		}
+
+	}
+
 	return nil
 }
 
