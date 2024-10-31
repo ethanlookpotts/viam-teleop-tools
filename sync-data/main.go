@@ -156,11 +156,14 @@ func reuploadData(ctx context.Context, logger logging.Logger, destination DataDe
 	coll := mongoClient.Database(QueryableTabularDatabaseName).Collection(QueryableTabularCollectionName)
 	// My brutal index to speed up re-checking
 	// With this index, this func takes ~10 seconds locally. Without this, this func can take >10 minutes
-	indexName := "viam-teleop-tools-time-received-index"
+	indexName := "viam-teleop-tools-time-received-index-part-time"
 
 	logger.Infof("Creating %s.", indexName)
 	_, err = coll.Indexes().CreateOne(ctx, mongo.IndexModel{
-		Keys: bson.D{{Key: "time_received", Value: 1}},
+		Keys: bson.D{
+			{Key: "part_id", Value: 1},
+			{Key: "time_received", Value: 1},
+		},
 		Options: &options.IndexOptions{
 			Name: &indexName,
 		},
@@ -174,7 +177,10 @@ func reuploadData(ctx context.Context, logger logging.Logger, destination DataDe
 
 	// pretty inefficient but totally fine for localdb.
 	for i, datum := range data {
-		res := coll.FindOne(ctx, bson.M{"time_received": datum["time_received"]})
+		res := coll.FindOne(ctx, bson.M{
+			"part_id":       datum["part_id"],
+			"time_received": datum["time_received"],
+		})
 		err := res.Err()
 		isNoDocs := errors.Is(err, mongo.ErrNoDocuments)
 		if err != nil && !isNoDocs {
