@@ -92,7 +92,7 @@ func main() {
 		logger.Fatalw("error querying source data", "error", err)
 	}
 
-	if len(tabularDataByMQLResponse.Data) == 0 {
+	if len(tabularDataByMQLResponse.RawData) == 0 {
 		logger.Fatal("Zero documents returned from TabularDataByMQL")
 	}
 
