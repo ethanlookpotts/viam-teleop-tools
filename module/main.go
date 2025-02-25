@@ -11,6 +11,7 @@ var (
 	ModuleFamily      = resource.NewModelFamily("viz-team", "teleop")
 	EverythingModel   = ModuleFamily.WithModel("everything")
 	GlobetrotterModel = ModuleFamily.WithModel("globetrotter")
+	PetModel          = ModuleFamily.WithModel("pet")
 )
 
 func main() {
@@ -22,6 +23,10 @@ func main() {
 		Constructor: newGlobetrotter,
 	})
 
+	resource.RegisterComponent(sensor.API, PetModel, resource.Registration[sensor.Sensor, *PetConfig]{
+		Constructor: newPet,
+	})
+
 	module.ModularMain(
 		resource.APIModel{
 			API:   sensor.API,
@@ -29,5 +34,8 @@ func main() {
 		}, resource.APIModel{
 			API:   movementsensor.API,
 			Model: GlobetrotterModel,
+		}, resource.APIModel{
+			API:   sensor.API,
+			Model: PetModel,
 		})
 }

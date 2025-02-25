@@ -11,6 +11,7 @@ just build
 
 - `viz-team:teleop:everything`: A sensor that returns every interesting object that we want to support.
 - `viz-team:teleop:globetrotter`: A movement sensor that travels around the world.
+- `viz-team:teleop:pet`: A sensor that returns a picture of pets that we like (accepts a `pet_name` config field).
 
 ## Sync data from the cloud to your local db
 
